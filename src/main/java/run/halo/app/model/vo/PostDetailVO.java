@@ -33,5 +33,7 @@ public class PostDetailVO extends BasePostDetailDTO {
     private Set<Long> metaIds;
 
     private List<BaseMetaDTO> metas;
+
+    private String originalContentUrl;
 }
 

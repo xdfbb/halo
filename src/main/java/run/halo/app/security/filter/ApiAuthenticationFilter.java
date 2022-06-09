@@ -52,7 +52,8 @@ public class ApiAuthenticationFilter extends AbstractAuthenticationFilter {
             "/api/content/**/comments/**",
             "/api/content/options/comment",
             "/api/content/journals/*/likes",
-            "/api/content/posts/*/likes"
+            "/api/content/posts/*/likes",
+            "/api/content/posts/*/originalContent"
         );
 
         // set failure handler

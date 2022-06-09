@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.HtmlUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 import run.halo.app.cache.lock.CacheLock;
 import run.halo.app.cache.lock.CacheParam;
 import run.halo.app.controller.content.auth.PostAuthentication;
@@ -125,7 +127,9 @@ public class PostController {
         checkAuthenticate(postId);
 
         PostDetailVO postDetailVO = postRenderAssembler.convertToDetailVo(post);
-
+        UriComponentsBuilder builder = ServletUriComponentsBuilder.fromCurrentRequest();
+        builder.buildAndExpand().getPath();
+        postDetailVO.setOriginalContentUrl(builder.buildAndExpand().getPath() + "/originalContent");
         if (formatDisabled) {
             // Clear the format content
             postDetailVO.setContent(null);
@@ -139,6 +143,32 @@ public class PostController {
         postService.publishVisitEvent(postDetailVO.getId());
 
         return postDetailVO;
+    }
+
+    @GetMapping("{postId:\\d+}/originalContent")
+    @ApiOperation("Get original content of a post")
+    public String getOriginalContentBy(@PathVariable("postId") Integer postId,
+        @RequestParam(value = "formatDisabled", required = false, defaultValue = "true")
+            Boolean formatDisabled,
+        @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false")
+            Boolean sourceDisabled) {
+        Post post = postService.getById(postId);
+        checkAuthenticate(postId);
+        PostDetailVO postDetailVO = postRenderAssembler.convertToDetailVo(post);
+
+        if (formatDisabled) {
+            // Clear the format content
+            postDetailVO.setContent(null);
+        }
+
+        if (sourceDisabled) {
+            // Clear the original content
+            postDetailVO.setOriginalContent(null);
+        }
+
+        postService.publishVisitEvent(postDetailVO.getId());
+
+        return postDetailVO.getOriginalContent();
     }
 
     @GetMapping("/slug")
