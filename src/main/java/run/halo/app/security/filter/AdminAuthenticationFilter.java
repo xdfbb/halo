@@ -63,6 +63,7 @@ public class AdminAuthenticationFilter extends AbstractAuthenticationFilter {
             "/api/admin/is_installed",
             "/api/admin/password/code",
             "/api/admin/password/reset",
+            "/api/admin/tags",
             "/api/admin/login/precheck"
         );
 
